@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0"/>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
     <PackageReference Include="RabbitMQ.Client" Version="6.2.1"/>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\shared\EventBusRabbitMQ\EventBusRabbitMQ.csproj"/>

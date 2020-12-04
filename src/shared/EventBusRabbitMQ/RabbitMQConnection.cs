@@ -9,7 +9,7 @@ namespace EventBusRabbitMQ
   {
     private readonly IConnectionFactory _connectionFactory;
     private IConnection _connection;
-    private bool _disposed;
+    private bool _disposed = false;
 
     public RabbitMQConnection(IConnectionFactory connectionFactory)
     {
