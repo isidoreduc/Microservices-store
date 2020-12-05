@@ -4,8 +4,8 @@ using Ordering.CORE.Entities;
 
 namespace Ordering.CORE.Repositories
 {
-    public interface IOrderRepository : IRepository<Order>
+    public interface IOrderRepository : IRepositoryBase<Order>
     {
-        Task<IEnumerable<Order>> GetOrdersByUsername(string username);
+        Task<IEnumerable<Order>> GetAllByUsername(string username);
     }
 }

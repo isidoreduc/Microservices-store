@@ -7,7 +7,7 @@ using Ordering.CORE.Entities.Base;
 
 namespace Ordering.CORE.Repositories
 {
-    public interface IRepository<T> where T:Entity
+    public interface IRepositoryBase<T> where T:Entity
     {
         Task<IReadOnlyList<T>> GetAllAsync();
         // takes as parameter a bool returning condition
