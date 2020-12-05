@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,7 +15,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Ordering.APPLICATION.Handlers;
+using Ordering.CORE.Repositories;
 using Ordering.INFRASTRUCTURE.Data;
+using Ordering.INFRASTRUCTURE.Repositories;
 
 namespace Ordering.API
 {
@@ -28,6 +34,12 @@ namespace Ordering.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(Startup));
+            services.AddMediatR(typeof(CheckoutOrderHandler).GetTypeInfo().Assembly);
+            services.AddTransient<IOrderRepository, OrderRepository>();
+            // for generic type injection
+            services.AddScoped(typeof(IRepositoryBase<>), typeof(Repository<>));
+
             services.AddDbContext<OrderContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:MSSqlServer"]));
             services.AddControllers();
             services.AddSwaggerGen(c =>
