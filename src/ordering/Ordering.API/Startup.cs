@@ -41,11 +41,15 @@ namespace Ordering.API
         {
             services.AddAutoMapper(typeof(Startup));
             services.AddMediatR(typeof(CheckoutOrderHandler).GetTypeInfo().Assembly);
-            services.AddScoped<IOrderRepository, OrderRepository>();
-            // for generic type injection
-            services.AddScoped(typeof(IRepositoryBase<>), typeof(Repository<>));
+            // services.AddTransient<IOrderRepository, OrderRepository>();
+            // // for generic type injection
+            // services.AddScoped(typeof(IRepositoryBase<>), typeof(Repository<>));
+            // we made singleton this in order to resolve in mediatR when consuming Rabbit
+            services.AddDbContext<OrderContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:MSSqlServer"]), ServiceLifetime.Singleton);
 
-            services.AddDbContext<OrderContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:MSSqlServer"]));
+            services.AddScoped(typeof(IRepositoryBase<>), typeof(Repository<>));
+            services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
+            services.AddTransient<IOrderRepository, OrderRepository>(); // we made transient this in order to resolve in mediatR when consuming Rabbit
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -63,7 +67,7 @@ namespace Ordering.API
                 };
                 return new RabbitMQConnection(factory);
             });
-            services.AddScoped<EventRabbitMQConsumer>();
+            services.AddSingleton<EventRabbitMQConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
