@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
+using EventBusRabbitMQ;
+using EventBusRabbitMQ.Producer;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,10 +17,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Ordering.API.ExtensionMethods;
+using Ordering.API.RabbitMQ;
 using Ordering.APPLICATION.Handlers;
 using Ordering.CORE.Repositories;
 using Ordering.INFRASTRUCTURE.Data;
 using Ordering.INFRASTRUCTURE.Repositories;
+using RabbitMQ.Client;
 
 namespace Ordering.API
 {
@@ -36,7 +41,7 @@ namespace Ordering.API
         {
             services.AddAutoMapper(typeof(Startup));
             services.AddMediatR(typeof(CheckoutOrderHandler).GetTypeInfo().Assembly);
-            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             // for generic type injection
             services.AddScoped(typeof(IRepositoryBase<>), typeof(Repository<>));
 
@@ -46,6 +51,19 @@ namespace Ordering.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ordering.API", Version = "v1" });
             });
+
+            // rabbitmq connection
+            services.AddSingleton<IRabbitMQConnection>(sp =>
+            {
+                var factory = new ConnectionFactory()
+                {
+                    HostName = Configuration["EventBus:HostName"],
+                    UserName = Configuration["EventBus:UserName"],
+                    Password = Configuration["EventBus:Password"]
+                };
+                return new RabbitMQConnection(factory);
+            });
+            services.AddScoped<EventRabbitMQConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +86,8 @@ namespace Ordering.API
             {
                 endpoints.MapControllers();
             });
+
+            app.UseRabbitMQListener();
         }
     }
 }
