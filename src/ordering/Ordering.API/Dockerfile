@@ -5,10 +5,10 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["src/ordering/Ordering.API/Ordering.API.csproj", "src/ordering/Ordering.API/"]
-COPY ["src/ordering/Ordering.Application/Ordering.Application.csproj", "src/ordering/Ordering.Application/"]
-COPY ["src/ordering/Ordering.Core/Ordering.Core.csproj", "src/ordering/Ordering.Core/"]
+COPY ["src/ordering/Ordering.APPLICATION/Ordering.APPLICATION.csproj", "src/ordering/Ordering.APPLICATION/"]
+COPY ["src/ordering/Ordering.CORE/Ordering.CORE.csproj", "src/ordering/Ordering.CORE/"]
 COPY ["src/shared/EventBusRabbitMQ/EventBusRabbitMQ.csproj", "src/shared/EventBusRabbitMQ/"]
-COPY ["src/ordering/Ordering.Infrastructure/Ordering.Infrastructure.csproj", "src/ordering/Ordering.Infrastructure/"]
+COPY ["src/ordering/Ordering.INFRASTRUCTURE/Ordering.INFRASTRUCTURE.csproj", "src/ordering/Ordering.INFRASTRUCTURE/"]
 RUN dotnet restore "src/ordering/Ordering.API/Ordering.API.csproj"
 COPY . .
 WORKDIR "/src/src/ordering/Ordering.API"
